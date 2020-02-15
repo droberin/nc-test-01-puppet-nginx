@@ -1,0 +1,5 @@
+# Ignore IDE
+.idea
+
+# Ignore possible backup files
+*~
