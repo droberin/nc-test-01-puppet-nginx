@@ -3,9 +3,10 @@ First test for NC
 
 
 ## Worklog
-2020-02-15 - 11:00 to 11:15h started repository on GitHub and started some basic documentation
-2020-02-15 - 11:15 to 12:15h Setup basic Puppet Server, an Agent and pdk in Docker containers. No local setup for now.
-2020-02-15 - 12:15 to 12:30h Publish some basic setup results and raw module. Finish this iteration. It's weekend after all! 
+* 2020-02-15 - 11:00 to 11:15h started repository on GitHub and started some basic documentation
+* 2020-02-15 - 11:15 to 12:15h Setup basic Puppet Server, an Agent and pdk in Docker containers. No local setup for now.
+* 2020-02-15 - 12:15 to 12:30h Publish some basic setup results and raw module. Finish this iteration. It's weekend after all! 
+* 2020-02-15 - 13:20 to 14:00h Friends being late... let's add some modules to puppet, like nginx and prepare target servers to be forwarded to ;)
 
 
 ## Test goals
@@ -17,6 +18,19 @@ Create a proxy to redirect requests for https://domain.com to 10.10.10.10 and re
 Create a forward proxy to log HTTP requests going from the internal network to the Internet including: request protocol, remote IP and time take to serve the request.
 (Optional) Implement a proxy health check.
 ```
+
+## Prepare target goals
+```bash
+$ docker network create --internal --subnet 10.10.10.0/24 nginx-net-10
+$ docker network create --internal --subnet 20.20.20.0/24 nginx-net-20
+$ docker run -d --name nginx-10 --net nginx-net-10 --ip 10.10.10.10 nginx:alpine
+$ docker exec -ti nginx-10 ip addr | awk '{if($7~"eth0"){print $2"\n"}}
+10.10.10.10/24
+$ docker run -d --name nginx-20 --net nginx-net-20 --ip 20.20.20.20 nginx:alpine
+docker exec -ti nginx-20 ip addr | awk '{if($7~"eth0"){print $2"\n"}}
+20.20.20.20/24
+```
+None of these 2 servers are reachable through external network.
 
 ## Deploying Puppet
 ### Server and a basic agent
@@ -86,5 +100,32 @@ alias pdk="docker run --rm -v ${NC_TEST_WD}/modules/nginx_manager_nc:/root/nginx
 ```
 Now we can test if the module is found by pdk inside container:
 ```bash
-pdk new task && echo $?
+pdk new task
+```
+__Hint__: When this command doesn't find a valid directory it will warn you instead of providing help due to missing parameters.
+ 
+#### Alias puppet and install Nginx Module to puppet
+Set a quick alias for puppet
+```
+alias puppet="docker exec -ti puppet puppet"
+```
+And install this module
+```bash
+puppet module install puppet-nginx
+```
+Seems it works fine
+```text
+Notice: Preparing to install into /etc/puppetlabs/code/environments/production/modules ...
+Notice: Downloading from https://forgeapi.puppet.com ...
+Notice: Installing -- do not interrupt ...
+/etc/puppetlabs/code/environments/production/modules
+└─┬ puppet-nginx (v1.1.0)
+  └─┬ puppetlabs-concat (v6.2.0)
+    ├── puppetlabs-stdlib (v6.2.0)
+    └── puppetlabs-translate (v2.1.0)
+```
+
+## Get an Ubuntu based puppet agent
+```bash
+docker run --net puppet --net nginx-servers --name nginx-ubuntu --hostname nginx-ubuntu puppet/puppet-agent-ubuntu
 ```
