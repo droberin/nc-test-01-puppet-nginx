@@ -7,6 +7,7 @@ First test for NC
 * 2020-02-15 - 11:15 to 12:15h Setup basic Puppet Server, an Agent and pdk in Docker containers. No local setup for now.
 * 2020-02-15 - 12:15 to 12:30h Publish some basic setup results and raw module. Finish this iteration. It's weekend after all! 
 * 2020-02-15 - 13:20 to 14:00h Friends being late... let's add some modules to puppet, like nginx and prepare target servers to be forwarded to ;)
+* 2020-02-15 - 14:00 to 14:20h Friends still not here. Add info for testing nginx from servers
 
 
 ## Test goals
@@ -31,6 +32,13 @@ docker exec -ti nginx-20 ip addr | awk '{if($7~"eth0"){print $2"\n"}}
 20.20.20.20/24
 ```
 None of these 2 servers are reachable through external network.
+
+### Test nginx from target servers
+```bash
+$ docker pull curlimages/curl
+$ docker run --rm -ti --net nginx-net-10 curlimages/curl curl -I 10.10.10.10 > /dev/null; echo $?
+$ docker run --rm -ti --net nginx-net-20 curlimages/curl curl -I 20.20.20.20 > /dev/null; echo $?
+```
 
 ## Deploying Puppet
 ### Server and a basic agent
