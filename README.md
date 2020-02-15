@@ -5,6 +5,7 @@ First test for NC
 ## Worklog
 2020-02-15 - 11:00 to 11:15h started repository on GitHub and started some basic documentation
 2020-02-15 - 11:15 to 12:15h Setup basic Puppet Server, an Agent and pdk in Docker containers. No local setup for now.
+2020-02-15 - 12:15 to 12:30h Publish some basic setup results and raw module. Finish this iteration. It's weekend after all! 
 
 
 ## Test goals
@@ -32,7 +33,7 @@ docker run --net puppet puppet/puppet-agent-alpine
 docker image pull puppet/pdk
 ```
 #### Interact with pdk
-Let's make interactions with pdk a little bit easier. This docker image seems to be using `/root` as `WORKDIR` plus adds some scripts to it.
+Let's make interactions with pdk a little bit easier. This docker image seems to be using `/root` as `WORKDIR` and `pdk` command as `entrypoing`, plus adds some scripts to `/root`, so let's keep them, just in case.
 
 ```bash
 export NC_TEST_WD=$PWD
@@ -79,8 +80,7 @@ $ ls ${NC_TEST_WD}/modules/nginx_manager_nc
 pdk-module-target20200215-6-9g07fc
 ```
 
-So let's use this module as work dir for pdk.
-
+So let's use this module as work dir for `pdk` command.
 ```
 alias pdk="docker run --rm -v ${NC_TEST_WD}/modules/nginx_manager_nc:/root/nginx_manager_nc -w /root/nginx_manager_nc/pdk-module-target20200215-6-9g07fc puppet/pdk"
 ```
