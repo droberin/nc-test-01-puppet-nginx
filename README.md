@@ -441,7 +441,7 @@ docker cp ${NC_TEST_WD}/nginx_manager_nc.pp puppet:/etc/puppetlabs/code/environm
 
 
 ## TODO
-* Create 
+* Send logs into graylog...
 * Convert this into a module as we created it before
 * Proxy healthcheck (optional) I think nowadays one uses the ones that are provided by the platform, like healthcheck and liveprobeness from Kubernetes anyway... so if service is not working, platform will fix that instead.
 
